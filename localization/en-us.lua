@@ -336,6 +336,7 @@ return {
             b_steamodded = 'Steamodded',
             b_credits = 'Credits',
             b_open_mods_dir = 'Open Mods directory',
+            b_open_mods_dir_short = 'Open Folder',
             b_no_mods = 'No mods have been detected...',
             b_mod_list = 'List of Activated Mods',
             b_mod_loader = 'Mod Loader',

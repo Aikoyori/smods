@@ -1559,6 +1559,20 @@ function G.FUNCS.openModsDirectory(options)
     love.system.openURL(SMODS.MODS_DIR)
 end
 
+function G.FUNCS.revealModFolder(options)
+    ---@type Mod
+    local mod = options.config.ref_table
+    local composed_path, isZipMod = SMODS.get_mod_directory_or_zip(mod)
+    composed_path = composed_path .. (not isZipMod and ("/" .. mod.main_file) or "")
+    if love.system.getOS() == "Windows" then
+        os.execute('explorer \\select,"'..composed_path..'"')
+    elseif love.system.getOS() == "OS X" then
+        os.execute('open -R "'..composed_path..'"')
+    else -- idk how standardise linux stuff works  but i was told to do whatever this is so i'll just gonna let it do its thing
+        os.execute(string.format('dbus-send --session --print-reply --dest=org.freedesktop.FileManager1 --type=method_call /org/freedesktop/FileManager1 org.freedesktop.FileManager1.ShowItems array:string:"file:///%s" string:""', composed_path))
+    end
+end
+
 function G.FUNCS.mods_buttons_page(options)
     if not options or not options.cycle_config then
         return
@@ -2184,19 +2198,37 @@ function SMODS.GUI.staticModListContent()
                             {
                                 n = G.UIT.R,
                                 config = {
-                                    padding = 0.05,
-                                    align = "cm"
+                                    padding = 0.1,
+                                    align = "cl"
                                 },
                                 nodes = {
-                                    UIBox_button({
-                                        label = { localize('b_mod_list') },
-                                        shadow = true,
-                                        scale = scale*0.85,
-                                        colour = G.C.BOOSTER,
-                                        button = "openModsDirectory",
-                                        minh = scale,
-                                        minw = 9
-                                    }),
+                                    {
+                                        n = G.UIT.C,
+                                        config = {
+                                            minw = 8,
+                                            padding = 0.1,
+                                            align = "cl"
+                                        },
+                                        nodes = {
+                                        }
+                                    },
+                                    {
+                                        n = G.UIT.C,
+                                        config = {
+                                            minw = 8,
+                                            padding = 0.1,
+                                            align = "cr"
+                                        },
+                                        nodes = {
+                                            UIBox_button({
+                                                label = { localize('b_open_mods_dir_short') },
+                                                shadow = true,
+                                                scale = scale*0.4,
+                                                colour = G.C.BOOSTER,
+                                                button = "openModsDirectory",
+                                            }),
+                                        }
+                                    },
                                 }
                             },
 
@@ -2230,7 +2262,7 @@ function SMODS.GUI.staticModListContent()
                                     padding = 0.05,
                                     align = "cm",
                                     minh = 5,
-                                    minw = 5
+                                    minw = 16
                                 },
                                 nodes = {
                                     {n=G.UIT.O, config={align = "cm", id = 'modsList', object = Moveable()}},

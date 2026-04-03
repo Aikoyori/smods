@@ -4051,3 +4051,27 @@ end
 function SMODS.create_unlock_text(center)
 	return localize('k_'..string.lower(center and center.set or 'unknown'))
 end
+
+---@param mod Mod mod to get path
+---@return composed_path string string for mod path, has zip extension at the end for targeting folder/zip as a whole
+---@return isZipMod boolean if a mod is installed as a zip mod, sometimes this is needed
+function SMODS.get_mod_directory_or_zip(mod)
+    local isZipMod = false
+    local composed_path = ""
+    local final_str = ""
+    for v in string.gmatch(mod.path, "([^.]+)") do
+        if composed_path ~= "" then
+            if v ~= "mnt/" then
+                composed_path = composed_path .. "." .. (v or "")
+            end
+        else
+            composed_path = v
+        end
+        final_str = v
+    end
+    if final_str == "mnt/" then
+        isZipMod = true
+    end
+    return composed_path, isZipMod
+end
+
